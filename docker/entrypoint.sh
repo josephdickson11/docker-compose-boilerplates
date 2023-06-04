@@ -14,13 +14,23 @@ else
     echo "env file exists"
 fi
 
-php artisan migrate
-php artisan key:generate
-php artisan cache:clear
-php artisan config:clear
+role=${CONTAINER_ROLE:-app}
 
-php artisan route:clear
+if [ "$role" = "app" ]; then
+    php artisan migrate
+    php artisan key:generate
+    php artisan cache:clear
+    php artisan config:clear
 
-php artisan serve --port=$PORT --host=0.0.0.0 --env=.env
-exec docker-php-entrypoint "$@"
+    php artisan route:clear
+
+    php artisan serve --port=$PORT --host=0.0.0.0 --env=.env
+    exec docker-php-entrypoint "$@"
+elif [ "$role" = "queue" ]; then
+    echo "Running the queue ..."
+    php artisan queue:work --verbose --tries=3  --timeout=180
+
+fi
+
+
 
