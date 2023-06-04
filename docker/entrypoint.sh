@@ -30,6 +30,10 @@ elif [ "$role" = "queue" ]; then
     echo "Running the queue ..."
     php artisan queue:work --verbose --tries=3  --timeout=180
 
+elif [ "$role" = "websocket" ]; then
+    echo "Running the websocket server ..."
+    php artisan websocket:serve
+
 fi
 
 
